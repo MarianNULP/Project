@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "events",
+  "info": {
+    "singularName": "event",
+    "pluralName": "events",
+    "displayName": "Event"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "organizer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "events"
+    },
+    "city": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "events"
+    },
+    "type": {
+      "type": "enumeration",
+      "default": "offline",
+      "enum": [
+        "offline",
+        "online"
+      ]
+    },
+    "location_details": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string",
+      "default": "UAH"
+    },
+    "terms": {
+      "type": "text"
+    },
+    "max_capacity": {
+      "type": "integer"
+    }
+  }
+}

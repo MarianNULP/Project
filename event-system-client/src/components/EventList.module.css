@@ -1,0 +1,132 @@
+.eventCard {
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.eventCardImage {
+  width: 100%;
+  height: 200px; 
+  object-fit: cover;
+}
+
+.eventCardContent {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.eventCardTitle {
+  margin: 0 0 10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.1rem;
+}
+
+.eventCardMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: auto; 
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.container {
+    display: flex;
+    gap: 30px;
+}
+
+.resultsColumn {
+    flex: 1;
+}
+
+.filtersColumn {
+    width: 300px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    height: fit-content;
+}
+.searchBox {
+    position: relative;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.searchInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+.filtersHeader {
+    margin-top: 0;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filterLabel {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.filtersColumn input[type="text"],
+.filtersColumn input[type="date"],
+.filtersColumn select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box; 
+}
+
+.filtersColumn button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.applyButton {
+  background: #3498db;
+}
+
+.applyButton:hover {
+  background: #2980b9;
+}
+
+.resetButton {
+  background: #95a5a6;
+}
+
+.resetButton:hover {
+  background: #7f8c8d;
+}
