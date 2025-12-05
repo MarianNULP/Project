@@ -106,14 +106,29 @@ export default function EditEventPage({ params }) {
     );
   };
 
-  const uploadFile = async (jwt) => {
+const uploadFile = async (jwt) => {
     const formData = new FormData();
-    formData.append('files', newFile);
-    const res = await fetch('http://localhost:1337/api/upload', {
-      method: 'POST', headers: { 'Authorization': `Bearer ${jwt}` }, body: formData
-    });
-    const data = await res.json();
-    return data[0].id;
+    formData.append('files', file); // або newFile
+
+    try {
+      const res = await fetch('http://localhost:1337/api/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${jwt}` },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      
+      // 👇 ВАША ПОМИЛКА ТУТ 👇
+      // Неправильно: return data[0]; 
+      // ПРАВИЛЬНО:
+      return data[0].id;  // <--- МИ МАЄМО ПОВЕРНУТИ ТІЛЬКИ ЧИСЛО!
+      
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   };
 
   const handleUpdate = async (e) => {

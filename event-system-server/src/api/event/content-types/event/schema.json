@@ -39,12 +39,6 @@
     "city": {
       "type": "string"
     },
-    "categories": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::category.category",
-      "mappedBy": "events"
-    },
     "type": {
       "type": "enumeration",
       "default": "offline",
@@ -68,6 +62,23 @@
     },
     "max_capacity": {
       "type": "integer"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "event"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "events"
+    },
+    "registrations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::registration.registration"
     }
   }
 }

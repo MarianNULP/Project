@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { EventForm } from './EventForm'; 
+import ReviewSection from '@/components/ReviewSection';
 
 // Функція отримання даних
 async function getEvent(id) {
@@ -115,6 +116,8 @@ export default async function EventPage({ params }) {
         
         </div>
       </div>
+      
+      <ReviewSection eventId={event.id} />
     </main>
   );
 }

@@ -80,6 +80,12 @@
     },
     "city": {
       "type": "string"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "users_permissions_user"
     }
   }
 }

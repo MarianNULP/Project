@@ -38,8 +38,10 @@ export default function ProfilePage() {
 
         // 2. 👇 ЗАВАНТАЖУЄМО ПОДІЇ, СТВОРЕНІ КОРИСТУВАЧЕМ
         // Фільтр: organizer.id == мій id
-        const eventsRes = await fetch(`http://localhost:1337/api/events?filters[organizer][id][$eq]=${parsedUser.id}&populate=*`, {
-          headers: { 'Authorization': `Bearer ${jwt}` }
+
+        console.log(`🔍 Шукаю події для User ID: ${parsedUser.id}`);
+        const eventsRes = await fetch(`http://localhost:1337/api/events?filters[organizer][id][$eq]=${parsedUser.id}&populate[cover]=*&populate[registrations]=*`, {
+            headers: { 'Authorization': `Bearer ${jwt}` }
         });
         const eventsData = await eventsRes.json();
         setMyEvents(eventsData.data || []);
@@ -126,9 +128,51 @@ export default function ProfilePage() {
   if (loading) return <main><p style={{ textAlign: 'center' }}>Завантаження...</p></main>;
   if (!user) return null;
 
+  // 👇 ОБЧИСЛЕННЯ АНАЛІТИКИ
+  const stats = myEvents.reduce((acc, event) => {
+    // Беремо всі реєстрації на цю подію
+    const regs = event.registrations || [];
+    
+    // Рахуємо тільки схвалені (продані)
+    const soldCount = regs.filter(r => r.approval_status === 'approved').length;
+    
+    // Додаємо до загальних сум
+    acc.totalEvents += 1;
+    acc.totalRegistrations += regs.length; // Всього заявок
+    acc.totalSold += soldCount; // Продано/Схвалено
+    acc.totalRevenue += (event.price || 0) * soldCount; // Гроші
+    
+    return acc;
+  }, { totalEvents: 0, totalRegistrations: 0, totalSold: 0, totalRevenue: 0 });
+
   return (
     <main>
       <h1 style={{ textAlign: 'center' }}>Мій кабінет</h1>
+
+      {/* 👇 БЛОК АНАЛІТИКИ 👇 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', maxWidth: '1000px', margin: '20px auto' }}>
+        
+        <div className="event-card" style={{ textAlign: 'center', background: '#e8f6f3' }}>
+          <h3 style={{ margin: 0, fontSize: '2rem', color: '#16a085' }}>{stats.totalRevenue} ₴</h3>
+          <p style={{ margin: 0, color: '#7f8c8d' }}>Загальний дохід</p>
+        </div>
+
+        <div className="event-card" style={{ textAlign: 'center', background: '#fef9e7' }}>
+          <h3 style={{ margin: 0, fontSize: '2rem', color: '#f39c12' }}>{stats.totalSold}</h3>
+          <p style={{ margin: 0, color: '#7f8c8d' }}>Квитків продано</p>
+        </div>
+
+        <div className="event-card" style={{ textAlign: 'center', background: '#ebf5fb' }}>
+          <h3 style={{ margin: 0, fontSize: '2rem', color: '#2980b9' }}>{stats.totalRegistrations}</h3>
+          <p style={{ margin: 0, color: '#7f8c8d' }}>Всього заявок</p>
+        </div>
+        
+        <div className="event-card" style={{ textAlign: 'center' }}>
+           <h3 style={{ margin: 0, fontSize: '2rem' }}>{stats.totalEvents}</h3>
+           <p style={{ margin: 0, color: '#7f8c8d' }}>Активних подій</p>
+        </div>
+      </div>
+      {/* 👆 КІНЕЦЬ БЛОКУ АНАЛІТИКИ 👆 */}
 
       {/* 👇 НОВА ФОРМА: Налаштування профілю */}
       <div className="event-card" style={{ maxWidth: '800px', margin: '30px auto', background: '#f8f9fa' }}>
