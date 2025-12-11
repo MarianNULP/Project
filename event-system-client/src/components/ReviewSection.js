@@ -61,7 +61,7 @@ export default function ReviewSection({ eventId }) {
         }
       };
 
-      const res = await fetch('${API_URL}/api/reviews', {
+      const res = await fetch(`${API_URL}/api/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

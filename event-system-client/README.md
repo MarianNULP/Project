@@ -67,4 +67,4 @@
 3. Додайте змінну `NEXT_PUBLIC_API_URL` у налаштуваннях Vercel.
 
 ---
-Created by [Ваше Ім'я]
+Created by Marian

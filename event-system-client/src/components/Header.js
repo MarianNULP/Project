@@ -125,7 +125,7 @@ export default function Header() {
                         )}
                         
                         {user && user.username === 'Marian' && (
-                            <a href="${API_URL}/admin" target="_blank" rel="noopener noreferrer" className={styles.adminLink} title="Адмін-панель">
+                            <a href=`${API_URL}/admin` target="_blank" rel="noopener noreferrer" className={styles.adminLink} title="Адмін-панель">
                                 🛡️
                             </a>
                         )}

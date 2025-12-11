@@ -42,7 +42,7 @@ export default function CreateEventPage() {
   const fetchCategories = async () => {
     try {
       // ⚠️ Переконайся, що IP правильний. Якщо працюєш локально, краще 127.0.0.1 або localhost
-      const res = await fetch('${API_URL}/api/categories');
+      const res = await fetch(`${API_URL}/api/categories`);
       const data = await res.json();
       setAllCategories(data.data || []);
     } catch (err) {
@@ -96,7 +96,7 @@ export default function CreateEventPage() {
     const formData = new FormData();
     formData.append('files', file);
     try {
-      const res = await fetch('${API_URL}/api/upload', {
+      const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${jwt}` },
         body: formData
@@ -137,7 +137,7 @@ export default function CreateEventPage() {
     };
 
     try {
-      const res = await fetch('${API_URL}/api/events', {
+      const res = await fetch(`${API_URL}/api/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
         body: JSON.stringify(payload)

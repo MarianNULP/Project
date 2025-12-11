@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css'; // Імпорт нових стилів
 
 // 👇 Ваші ключі
-const GOOGLE_API_KEY = "AIzaSyBuQa5eBHemCQQAlidEflw_qcfMsBrVjSE";
-const UNSPLASH_ACCESS_KEY = "TRlCBMLYF8YpxEkMKEdcmdkyhNU6hcl17yPY-dP6UZc";
+const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
 export default function EditEventPage({ params }) {
   const { id } = use(params);
@@ -43,7 +43,7 @@ export default function EditEventPage({ params }) {
 
       try {
         // Завантажуємо категорії
-        const catRes = await fetch('${API_URL}/api/categories');
+        const catRes = await fetch(`${API_URL}/api/categories`);
         const catData = await catRes.json();
         setAllCategories(catData.data || []);
 
@@ -141,7 +141,7 @@ export default function EditEventPage({ params }) {
     const formData = new FormData(); 
     formData.append('files', newFile); 
     try {
-      const res = await fetch('${API_URL}/api/upload', {
+      const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST', headers: { 'Authorization': `Bearer ${jwt}` }, body: formData,
       });
       const data = await res.json();

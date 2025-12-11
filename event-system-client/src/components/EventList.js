@@ -54,7 +54,7 @@ export default function EventList({ initialEvents }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('${API_URL}/api/categories');
+        const res = await fetch(`${API_URL}/api/categories`);
         const data = await res.json();
         setAllCategories(data.data || []);
       } catch (err) { console.error("Err categories", err); }

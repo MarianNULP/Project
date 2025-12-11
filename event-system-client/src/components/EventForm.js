@@ -50,7 +50,7 @@ export function EventForm({ eventName, eventId, price }) {
         }
       };
 
-      const res = await fetch('${API_URL}/api/registrations', {
+      const res = await fetch(`${API_URL}/api/registrations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

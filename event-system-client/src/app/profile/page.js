@@ -7,7 +7,7 @@ import QRCode from "react-qr-code";
 import styles from './page.module.css'; // Імпорт стилів
 
 // 👇 ВАША IP АДРЕСА
-const API_URL = '${API_URL}'; 
+const API_URL = `${API_URL}`; 
 const SITE_URL = 'http://192.168.50.254:3000';
 
 export default function ProfilePage() {
