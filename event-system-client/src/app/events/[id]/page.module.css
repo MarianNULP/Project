@@ -1,0 +1,152 @@
+/* app/events/[id]/EventPage.module.css */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mainWrapper {
+  padding: 40px 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.backLink {
+  align-self: flex-start;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  backdrop-filter: blur(5px);
+  transition: all 0.2s;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 20px auto;
+}
+
+.backLink:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-5px);
+}
+
+.card {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.coverImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.noImage {
+  height: 150px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.content {
+  padding: 40px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  line-height: 1.2;
+}
+
+.dateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.infoBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.infoBox:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.infoLabel {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.infoValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.priceValue { color: #10b981; }
+
+.linkValue { color: #3b82f6; text-decoration: none; }
+.linkValue:hover { text-decoration: underline; }
+
+.divider {
+  height: 1px;
+  background: #e2e8f0;
+  border: none;
+  margin: 0 0 40px 0;
+}
+
+.description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #334155;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .coverImage { height: 250px; }
+  .title { font-size: 1.8rem; }
+  .content { padding: 25px; }
+}

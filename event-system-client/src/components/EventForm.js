@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Додамо переадресацію після покупки
+import { useRouter } from 'next/navigation';
+import styles from './EventForm.module.css'; // Імпорт стилів
 
 export function EventForm({ eventName, eventId, price }) {
   const [user, setUser] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false); // Стан "Оплата в процесі"
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   
   const router = useRouter();
@@ -19,39 +20,37 @@ export function EventForm({ eventName, eventId, price }) {
 
   const handleRegisterOrBuy = async () => {
     if (!user) {
-      alert('Увійдіть, щоб продовжити');
-      router.push('/login');
+      // Можна просто перенаправити, а можна показати alert
+      if (confirm('Для реєстрації потрібно увійти. Перейти на сторінку входу?')) {
+        router.push('/login');
+      }
       return;
     }
 
     const jwt = localStorage.getItem('jwt');
     
-    // Імітація процесу оплати (якщо ціна > 0)
+    // Імітація оплати
     if (price > 0) {
       const confirmBuy = confirm(`Вартість квитка: ${price} UAH.\n\nСимулювати оплату карткою? 💳`);
       if (!confirmBuy) return;
       
       setIsProcessing(true);
-      // Чекаємо 1.5 секунди для краси (ніби банк обробляє)
       await new Promise(resolve => setTimeout(resolve, 1500));
+    } else {
+        setIsProcessing(true); // Для безкоштовних теж покажемо спіннер на секунду
     }
 
     try {
-      // Формуємо дані
       const payload = {
         data: {
           event: eventId,
           user: user.id,
-          publishedAt: new Date(), // Одразу публікуємо
-          // 👇 ГОЛОВНИЙ ФОКУС:
-          // Якщо платно — ставимо approved (бо гроші "зайшли").
-          // Якщо безкоштовно — теж approved (бо вільний вхід).
-          // Якщо хочеш ручну модерацію безкоштовних, зміни на 'pending'.
+          publishedAt: new Date(),
           approval_status: 'approved' 
         }
       };
 
-      const res = await fetch('http://192.168.50.254:1337/api/registrations', {
+      const res = await fetch('${API_URL}/api/registrations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,10 +67,9 @@ export function EventForm({ eventName, eventId, price }) {
       setIsProcessing(false);
       setIsSuccess(true);
       
-      // Через 2 секунди після успіху перекидаємо в профіль
       setTimeout(() => {
         router.push('/profile');
-      }, 2000);
+      }, 2500);
 
     } catch (err) {
       setIsProcessing(false);
@@ -79,62 +77,54 @@ export function EventForm({ eventName, eventId, price }) {
     }
   };
 
-  // 1. Якщо вже успішно купили
+  // 1. Стан УСПІХУ
   if (isSuccess) {
     return (
-      <div style={{ padding: '30px', background: '#e8f8f5', border: '1px solid #2ecc71', borderRadius: '12px', textAlign: 'center' }}>
-        <h2 style={{ color: '#27ae60', margin: 0 }}>🎉 Вітаємо!</h2>
-        <p style={{ fontSize: '1.2rem' }}>
-            {price > 0 ? 'Оплата успішна. Квиток придбано.' : 'Ви успішно зареєстровані.'}
+      <div className={styles.successCard}>
+        <span className={styles.successIcon}>🎉</span>
+        <h2 className={styles.successTitle}>Вітаємо!</h2>
+        <p className={styles.successText}>
+            {price > 0 ? 'Квиток успішно оплачено.' : 'Ви зареєстровані!'}
         </p>
-        <p style={{ color: '#7f8c8d' }}>Зараз вас перенаправить у квитки...</p>
+        <div className={styles.redirectText}>
+           Перенаправлення у квитки... ⏳
+        </div>
       </div>
     );
   }
 
-  // 2. Основна картка покупки
+  // 2. Основна КАРТКА
   return (
-    <div style={{ 
-      background: 'white', 
-      border: '2px dashed #3498db', 
-      padding: '30px', 
-      borderRadius: '12px', 
-      textAlign: 'center',
-      marginTop: '20px'
-    }}>
-      <h3 style={{ marginTop: 0 }}>Реєстрація на подію</h3>
-      <p style={{ marginBottom: '20px', fontSize: '1.1rem' }}>
-        Ви реєструєтесь як: <strong>{user ? user.username : 'Гість'}</strong>
-        {user && <span style={{ display: 'block', fontSize: '0.9rem', color: '#7f8c8d' }}>({user.email})</span>}
-      </p>
+    <div className={styles.card}>
+      <h3 className={styles.title}>Реєстрація на подію</h3>
+      
+      <div className={styles.userInfo}>
+        Ви реєструєтесь як:<br/>
+        {user ? (
+            <span className={styles.userHighlight}>{user.username} ({user.email})</span>
+        ) : (
+            <span style={{color: '#999'}}>Гість (необхідний вхід)</span>
+        )}
+      </div>
 
-      {/* КНОПКА ПОКУПКИ */}
       <button 
         onClick={handleRegisterOrBuy} 
         disabled={isProcessing}
-        style={{ 
-          background: isProcessing ? '#95a5a6' : (price > 0 ? '#27ae60' : '#3498db'), 
-          color: 'white', 
-          border: 'none', 
-          padding: '15px 40px', 
-          borderRadius: '8px', 
-          fontSize: '1.2rem', 
-          fontWeight: 'bold', 
-          cursor: isProcessing ? 'not-allowed' : 'pointer',
-          transition: 'all 0.3s',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-        }}
+        className={`
+            ${styles.buyButton} 
+            ${isProcessing ? styles.processing : (price > 0 ? styles.paid : styles.free)}
+        `}
       >
         {isProcessing 
-          ? '⏳ Обробка платежу...' 
-          : (price > 0 ? `💳 Купити квиток за ${price} UAH` : '✅ Зареєструватись безкоштовно')
+          ? '⏳ Обробка...' 
+          : (price > 0 ? `💳 Купити квиток • ${price} ₴` : '✅ Взяти участь безкоштовно')
         }
       </button>
 
       {!user && (
-        <p style={{ marginTop: '15px', color: '#e74c3c' }}>
-          * Увійдіть в акаунт, щоб придбати квиток.
-        </p>
+        <div className={styles.loginWarning}>
+          🔒 Увійдіть в акаунт, щоб продовжити
+        </div>
       )}
     </div>
   );

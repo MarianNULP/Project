@@ -43,12 +43,12 @@ export default function EditEventPage({ params }) {
 
       try {
         // Завантажуємо категорії
-        const catRes = await fetch('http://192.168.50.254:1337/api/categories');
+        const catRes = await fetch('${API_URL}/api/categories');
         const catData = await catRes.json();
         setAllCategories(catData.data || []);
 
         // Завантажуємо подію
-        const res = await fetch(`http://192.168.50.254:1337/api/events/${id}?populate=*`);
+        const res = await fetch(`${API_URL}/api/events/${id}?populate=*`);
         if (!res.ok) throw new Error('Помилка завантаження');
         
         const json = await res.json();
@@ -83,7 +83,7 @@ export default function EditEventPage({ params }) {
         }
 
         if (event.cover) {
-          setCurrentImage(`http://192.168.50.254:1337${event.cover.url}`);
+          setCurrentImage(`${API_URL}${event.cover.url}`);
         }
         setLoading(false);
       } catch (err) {
@@ -141,7 +141,7 @@ export default function EditEventPage({ params }) {
     const formData = new FormData(); 
     formData.append('files', newFile); 
     try {
-      const res = await fetch('http://192.168.50.254:1337/api/upload', {
+      const res = await fetch('${API_URL}/api/upload', {
         method: 'POST', headers: { 'Authorization': `Bearer ${jwt}` }, body: formData,
       });
       const data = await res.json();
@@ -170,7 +170,7 @@ export default function EditEventPage({ params }) {
         }
       };
 
-      const res = await fetch(`http://192.168.50.254:1337/api/events/${id}`, {
+      const res = await fetch(`${API_URL}/api/events/${id}`, {
         method: 'PUT', 
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` }, 
         body: JSON.stringify(payload),

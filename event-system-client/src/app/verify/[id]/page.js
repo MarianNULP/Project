@@ -1,22 +1,38 @@
 "use client";
 
-import { useState, useEffect, use } from 'react'; // Додали use для params
+import { useState, useEffect, use } from 'react';
+import Link from 'next/link';
+import styles from './page.module.css';
 
 export default function VerifyTicketPage({ params }) {
-  // Розпаковуємо params через use() (для нових версій Next.js)
   const { id } = use(params);
   
-  const [status, setStatus] = useState('loading'); // loading | valid | invalid | error
+  const [status, setStatus] = useState('loading'); // loading | valid | invalid | pending | error | unauthorized
   const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
     const checkTicket = async () => {
+      // 👇 1. ПЕРЕВІРКА АВТОРИЗАЦІЇ
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) {
+        setStatus('unauthorized'); // Якщо не залогінений - стоп
+        return;
+      }
+
       try {
-        // Запит до Strapi: шукаємо реєстрацію за documentId (або id)
-        // Важливо: ми populate подію та юзера, щоб показати імена
-        const res = await fetch(`http://192.168.50.254:1337/api/registrations/${id}?populate=event&populate=user`);
+        // 👇 2. ЗАПИТ З ТОКЕНОМ (Тепер це безпечно)
+        const res = await fetch(`${API_URL}/api/registrations/${id}?populate=event&populate=user`, {
+            headers: {
+                'Authorization': `Bearer ${jwt}` // Додаємо токен сканувальника
+            }
+        });
         
         if (!res.ok) {
+          // Якщо 403 або 401 - токен протух або немає прав
+          if (res.status === 401 || res.status === 403) {
+             setStatus('unauthorized');
+             return;
+          }
           setStatus('invalid');
           return;
         }
@@ -24,12 +40,12 @@ export default function VerifyTicketPage({ params }) {
         const json = await res.json();
         const reg = json.data;
 
-        // Додаткова перевірка: чи статус approved?
         if (reg.approval_status === 'approved') {
           setTicketData(reg);
           setStatus('valid');
         } else {
-          setStatus('pending'); // Якщо квиток є, але не оплачений/не підтверджений
+          setTicketData(reg);
+          setStatus('pending');
         }
 
       } catch (err) {
@@ -41,39 +57,105 @@ export default function VerifyTicketPage({ params }) {
     if (id) checkTicket();
   }, [id]);
 
+  const getContainerClass = () => {
+    switch(status) {
+      case 'valid': return `${styles.container} ${styles.bgValid}`;
+      case 'invalid': return `${styles.container} ${styles.bgInvalid}`;
+      case 'pending': return `${styles.container} ${styles.bgPending}`;
+      default: return styles.container; // Для loading та unauthorized
+    }
+  };
+
   return (
-    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '20px', textAlign: 'center', background: '#f4f6f7' }}>
+    <main className={getContainerClass()}>
       
-      {status === 'loading' && <h2>⏳ Перевірка квитка...</h2>}
+      {status === 'loading' && (
+        <div className={styles.card}>
+          <div className={`${styles.icon} ${styles.loadingIcon}`}>⏳</div>
+          <h2 style={{color: '#64748b'}}>Перевірка квитка...</h2>
+        </div>
+      )}
 
+      {/* 🔒 БЛОК: ВИМАГАЄ ВХОДУ */}
+      {status === 'unauthorized' && (
+        <div className={styles.card}>
+          <div className={styles.icon} style={{animation: 'none', fontSize: '4rem'}}>👮‍♂️</div>
+          <h1 className={styles.title} style={{color: '#2c3e50'}}>Доступ заборонено</h1>
+          <p className={styles.subtitle}>
+            Щоб перевіряти квитки, ви повинні увійти в систему як Організатор або Адмін.
+          </p>
+          <Link href="/login" style={{
+              display: 'inline-block', 
+              background: '#3498db', 
+              color: 'white', 
+              padding: '12px 25px', 
+              borderRadius: '10px', 
+              textDecoration: 'none', 
+              fontWeight: 'bold'
+          }}>
+            Увійти в акаунт
+          </Link>
+        </div>
+      )}
+
+{/* ✅ ВАЛІДНИЙ КВИТОК */}
       {status === 'valid' && ticketData && (
-        <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(46, 204, 113, 0.3)', border: '2px solid #2ecc71' }}>
-          <div style={{ fontSize: '80px', marginBottom: '20px' }}>✅</div>
-          <h1 style={{ color: '#27ae60', margin: 0 }}>КВИТОК ДІЙСНИЙ</h1>
-          <p style={{ color: '#7f8c8d', fontSize: '1.2rem' }}>ID: {ticketData.documentId}</p>
+        <div className={`${styles.card} ${styles.cardValid}`}>
           
-          <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eee' }} />
+          <div className={styles.icon} style={{animation: 'none'}}>✅</div>
+          <h1 className={`${styles.title} ${styles.textValid}`}>КВИТОК ДІЙСНИЙ</h1>
           
-          <div style={{ textAlign: 'left' }}>
-            <p>👤 <strong>Гість:</strong> {ticketData.user?.username}</p>
-            <p>📅 <strong>Подія:</strong> {ticketData.event?.title}</p>
+          <hr style={{margin: '20px 0', border: 'none', borderTop: '1px dashed #bbf7d0'}} />
+
+          {/* 👇 РОБИМО АКЦЕНТ НА ПОДІЮ 👇 */}
+          <div style={{marginBottom: '20px'}}>
+             <span style={{fontSize: '0.8rem', textTransform: 'uppercase', color: '#666', fontWeight: 'bold'}}>Подія:</span>
+             <h2 style={{
+                 margin: '5px 0', 
+                 fontSize: '1.8rem', // Дуже великий шрифт
+                 color: '#1e293b', 
+                 lineHeight: '1.2',
+                 border: '2px solid #22c55e', // Рамка, щоб виділити назву
+                 padding: '10px',
+                 borderRadius: '10px',
+                 background: 'rgba(255,255,255,0.5)'
+             }}>
+                {ticketData.event?.title}
+             </h2>
           </div>
+
+          <div className={styles.infoBox}>
+            <span className={styles.label}>Гість</span>
+            <span className={styles.value} style={{fontSize: '1.5rem'}}>{ticketData.user?.username}</span>
+            
+            <span className={styles.label}>Тип квитка</span>
+            <span className={styles.value}>Стандарт</span>
+          </div>
+
+          <Link href="/" className={styles.homeLink}>← На головну</Link>
         </div>
       )}
 
-      {status === 'invalid' && (
-        <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(231, 76, 60, 0.3)', border: '2px solid #e74c3c' }}>
-          <div style={{ fontSize: '80px', marginBottom: '20px' }}>❌</div>
-          <h1 style={{ color: '#c0392b', margin: 0 }}>НЕ ЗНАЙДЕНО</h1>
-          <p>Цей квиток не існує в базі даних.</p>
+      {/* ❌ НЕВАЛІДНИЙ */}
+      {(status === 'invalid' || status === 'error') && (
+        <div className={`${styles.card} ${styles.cardInvalid}`}>
+          <div className={styles.icon} style={{animation: 'none'}}>🚫</div>
+          <h1 className={`${styles.title} ${styles.textInvalid}`}>Не знайдено</h1>
+          <p className={styles.subtitle} style={{color: '#ef4444'}}>Квиток підроблений або помилка.</p>
+          <Link href="/" className={styles.homeLink}>← На головну</Link>
         </div>
       )}
 
-      {status === 'pending' && (
-        <div style={{ background: 'white', padding: '40px', borderRadius: '20px', border: '2px solid #f39c12' }}>
-          <div style={{ fontSize: '80px', marginBottom: '20px' }}>⚠️</div>
-          <h1 style={{ color: '#f39c12', margin: 0 }}>ОЧІКУЄ ПІДТВЕРДЖЕННЯ</h1>
-          <p>Реєстрація є, але статус не "Approved".</p>
+       {/* ⚠️ ОЧІКУЄ */}
+       {status === 'pending' && (
+        <div className={`${styles.card} ${styles.cardPending}`}>
+          <div className={styles.icon} style={{animation: 'none'}}>✋</div>
+          <h1 className={`${styles.title} ${styles.textPending}`}>Не оплачено</h1>
+          <div className={styles.infoBox}>
+            <span className={styles.label}>Гість</span>
+            <span className={styles.value}>{ticketData?.user?.username}</span>
+          </div>
+          <Link href="/" className={styles.homeLink}>← На головну</Link>
         </div>
       )}
 

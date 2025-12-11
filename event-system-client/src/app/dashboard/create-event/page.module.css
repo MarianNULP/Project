@@ -1,6 +1,5 @@
 /* app/dashboard/create-event/page.module.css */
 
-/* Анімація появи */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -8,7 +7,7 @@
 
 .container {
   max-width: 800px;
-  margin: 60px auto;
+  margin: 40px auto;
   padding: 40px;
   
   /* Glassmorphism */
@@ -29,8 +28,8 @@
 .title {
   font-size: 2.2rem;
   font-weight: 800;
-  margin: 0;
-  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  margin: 0 0 10px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -53,10 +52,6 @@
   gap: 20px;
 }
 
-@media (max-width: 600px) {
-  .grid2 { grid-template-columns: 1fr; }
-}
-
 .label {
   font-size: 0.85rem;
   font-weight: 700;
@@ -69,7 +64,7 @@
   align-items: center;
 }
 
-/* Спільні стилі для Input, Select, Textarea */
+/* Inputs */
 .input, .textarea, .select {
   width: 100%;
   padding: 14px 16px;
@@ -95,7 +90,7 @@
   line-height: 1.6;
 }
 
-/* Кнопки-помічники (AI, Photo) */
+/* Helper Buttons */
 .helperBtn {
   font-size: 0.75rem;
   padding: 4px 10px;
@@ -120,7 +115,7 @@
   cursor: wait;
 }
 
-/* Зона завантаження фото */
+/* Image Upload */
 .imageUploadArea {
   border: 2px dashed #cbd5e1;
   border-radius: 16px;
@@ -146,13 +141,10 @@
 
 .fileInputWrapper {
   display: flex;
-  gap: 12px;
   justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
-/* Стилізація категорій (Tags) */
+/* Categories */
 .categoriesBox {
   display: flex;
   flex-wrap: wrap;
@@ -175,11 +167,8 @@
   gap: 6px;
 }
 
-.categoryTag input {
-  display: none; /* Ховаємо стандартний чекбокс */
-}
+.categoryTag input { display: none; }
 
-/* Активний стан категорії */
 .categoryTag.active {
   background: #667eea;
   color: white;
@@ -187,7 +176,7 @@
   transform: translateY(-1px);
 }
 
-/* Головна кнопка */
+/* Submit Button */
 .submitBtn {
   margin-top: 20px;
   width: 100%;
@@ -195,7 +184,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: white;
-  background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 14px;
   cursor: pointer;
@@ -211,7 +200,6 @@
 .submitBtn:disabled {
   background: #94a3b8;
   cursor: not-allowed;
-  transform: none;
 }
 
 .error {
@@ -222,4 +210,8 @@
   font-size: 0.9rem;
   text-align: center;
   font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .grid2 { grid-template-columns: 1fr; }
 }

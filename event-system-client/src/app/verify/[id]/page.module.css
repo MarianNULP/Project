@@ -1,0 +1,126 @@
+/* app/verify/[id]/page.module.css */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* Нейтральний фон за замовчуванням */
+  background: #f1f5f9;
+  transition: background 0.5s ease;
+}
+
+/* Змінюємо фон всієї сторінки залежно від статусу */
+.bgValid { background: #dcfce7; }   /* Світло-зелений */
+.bgInvalid { background: #fee2e2; } /* Світло-червоний */
+.bgPending { background: #fef9c3; } /* Світло-жовтий */
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 50px 30px;
+  border-radius: 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Кольорова смужка зверху */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 10px;
+}
+
+.cardValid::before { background: #22c55e; }
+.cardInvalid::before { background: #ef4444; }
+.cardPending::before { background: #f59e0b; }
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: bounce 1s infinite;
+}
+
+/* Анімація тільки для Loading */
+.loadingIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.textValid { color: #15803d; }
+.textInvalid { color: #b91c1c; }
+.textPending { color: #b45309; }
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  font-family: monospace;
+}
+
+.infoBox {
+  text-align: left;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.value:last-child { margin-bottom: 0; }
+
+.homeLink {
+  display: inline-block;
+  margin-top: 30px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+
+.homeLink:hover {
+  background: #e2e8f0;
+  color: #334155;
+}

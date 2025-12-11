@@ -1,0 +1,163 @@
+/* app/components/Header.module.css */
+
+.header {
+  /* 🔥 Glassmorphism */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  /* Липкий хедер (щоб був завжди зверху) */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background 0.3s ease;
+
+  /* Додаємо плавність руху */
+  transition: transform 0.3s ease-in-out, background 0.3s ease;
+}
+
+.header:hover {
+  background: rgba(255, 255, 255, 0.1); /* Трохи світліше при наведенні */
+}
+
+/* Цей клас буде додаватися, коли треба сховати хедер */
+.hidden {
+  transform: translateY(-100%); /* Зсуваємо його вгору на 100% висоти */
+}
+
+/* Логотип */
+.logo {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+/* Навігація */
+.nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.welcomeText {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.username {
+  color: white;
+  font-weight: 700;
+}
+
+/* Посилання (Загальні) */
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.navLink:hover {
+  opacity: 0.8;
+}
+
+/* Кнопка "Мій профіль" */
+.profileBtn {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.profileBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Кнопка "Вийти" */
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  color: #e74c3c;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logoutBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  background: white;
+}
+
+/* Кнопка "Реєстрація" */
+.registerBtn {
+  background: white;
+  color: #1e293b;
+  padding: 10px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 800;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.registerBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Адмінка */
+.adminLink {
+  text-decoration: none;
+  font-size: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.adminLink:hover {
+  transform: scale(1.1);
+}
+
+/* Адаптивність для мобільних */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 20px;
+  }
+  .welcomeText {
+    display: none; /* Ховаємо "Вітаємо" на мобільному, щоб не забивати екран */
+  }
+  .logo span {
+    display: none; /* Можна лишити тільки іконку, якщо мало місця */
+  }
+  .logo::after {
+    content: 'EventPort'; /* Скорочена назва для моб */
+  }
+}

@@ -1,61 +1,86 @@
-# 🚀 Getting started with Strapi
+# 🛡️ EventPort — Backend API
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Це серверна частина (Headless CMS), що забезпечує роботу платформи **EventPort**.
+Побудована на базі **Strapi v5**.
 
-### `develop`
+## 🚀 Технології
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+* **Core:** Strapi v5 (Node.js)
+* **Database:** SQLite (Dev) / PostgreSQL (Prod)
+* **Auth:** JWT Authentication provider
+* **API:** REST API
 
-```
-npm run develop
-# or
-yarn develop
-```
+## 🗂️ Структура даних (Content Types)
 
-### `start`
+### 1. User (Користувачі)
+Стандартна колекція Strapi з розширеними полями:
+* `city` (Text)
+* `role` (Relation: Organizer / Authenticated)
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+### 2. Event (Події)
+* `title` (Text)
+* `description` (Rich Text)
+* `date` (DateTime)
+* `city` (Text)
+* `price` (Number)
+* `cover` (Media)
+* `organizer` (Relation -> User)
+* `categories` (Relation -> Category)
 
-```
-npm run start
-# or
-yarn start
-```
+### 3. Registration (Квитки)
+* `user` (Relation -> User)
+* `event` (Relation -> Event)
+* `approval_status` (Enum: pending, approved, rejected)
+* `qr_code_hash` (UID - documentId)
 
-### `build`
+### 4. Review (Відгуки)
+* `content` (Text)
+* `rating` (Number 1-5)
+* `event` (Relation -> Event)
+* `user` (Relation -> User)
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+### 5. Category (Категорії)
+* `name` (Text) — наприклад: "Концерт", "Навчання", "Спорт".
 
-```
-npm run build
-# or
-yarn build
-```
+## ⚙️ Налаштування прав (Permissions)
 
-## ⚙️ Deployment
+Для коректної роботи Frontend'у в адмін-панелі Strapi (Settings -> Users & Permissions Roles) налаштовано:
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+* **Public:**
+    * `Event`: find, findOne
+    * `Category`: find
+    * `Review`: find
+* **Authenticated:**
+    * `Event`: create (для організаторів)
+    * `Review`: create
+    * `Registration`: create, find (свої), delete
+    * `User`: me, update (профіль)
+* **Organizer (Custom Role):**
+    * Має права на редагування (`update`) та видалення (`delete`) **власних** подій.
 
-```
-yarn strapi deploy
-```
+## 🛠️ Встановлення та запуск
 
-## 📚 Learn more
+1.  **Клонуйте репозиторій:**
+    ```bash
+    git clone [https://github.com/ВАШ_НІК/event-app-backend.git](https://github.com/ВАШ_НІК/event-app-backend.git)
+    cd event-app-backend
+    ```
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+2.  **Встановіть залежності:**
+    ```bash
+    npm install
+    ```
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+3.  **Запустіть в режимі розробки:**
+    ```bash
+    npm run develop
+    ```
+    Адмін-панель доступна за адресою: [http://localhost:1337/admin](http://localhost:1337/admin).
 
-## ✨ Community
+## 🌍 Деплой
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+Рекомендована платформа: **Strapi Cloud** (найпростіше) або **Render.com**.
+При деплої обов'язково налаштуйте змінні середовища для бази даних (PostgreSQL).
 
 ---
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+Created by Marian

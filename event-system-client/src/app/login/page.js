@@ -1,77 +1,104 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
+import styles from './page.module.css';
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState(''); // Це може бути username або email
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
-      const res = await fetch('http://192.168.50.254:1337/api/auth/local', { // Ендпоінт для логіну
+      const res = await fetch('${API_URL}/api/auth/local', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password }), // Надсилаємо логін/пароль
+        body: JSON.stringify({ identifier, password }), 
       });
 
       const data = await res.json();
 
       if (data.error) {
-        throw new Error(data.error.message); // Помилка, якщо невірний логін/пароль
+        throw new Error("Невірний логін або пароль"); // Спрощуємо повідомлення для користувача
       }
 
-      // 🔥 УСПІХ! Ми отримали токен
-      console.log('Отримано токен:', data.jwt);
-      console.log('Дані користувача:', data.user);
-
-      // Зберігаємо токен і дані користувача в localStorage
-      // Це дозволить нам "пам'ятати" користувача
+      // Зберігаємо дані
       localStorage.setItem('jwt', data.jwt);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Перенаправляємо користувача на головну сторінку
+      // ⚠️ Використовуємо window.location для повного перезавантаження,
+      // щоб Header гарантовано побачив, що користувач увійшов
       window.location.href = '/'; 
 
     } catch (err) {
-      setError("Невірне ім'я користувача або пароль");
+      setError(err.message);
+      setLoading(false);
     }
   };
 
   return (
-    <main>
-      <form onSubmit={handleSubmit} className="event-card" style={{ maxWidth: '500px', margin: '40px auto' }}>
-        <h1 style={{ textAlign: 'center', marginTop: 0 }}>Вхід в акаунт</h1>
+    <div className={styles.container}>
+      <div>
+        <Link href="/" className={styles.backHome}>← На головну</Link>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          <label>Ім'я користувача або Email:</label>
-          <input
-            type="text"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            required
-          />
-          
-          <label>Пароль:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          
-          <button type="submit" style={{ marginTop: '10px' }}>Увійти</button>
-          
-          {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-          
-          <p style={{ textAlign: 'center', marginTop: '15px' }}>
-            Немає акаунту? <a href="/register" style={{ color: '#3498db' }}>Зареєструватися</a>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>З поверненням! 👋</h1>
+            <p className={styles.subtitle}>Введіть свої дані, щоб увійти в акаунт</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Email або Логін</label>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="user@example.com"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Пароль</label>
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <div className={styles.error}>⚠️ {error}</div>}
+            
+            <button 
+              type="submit" 
+              className={styles.submitBtn} 
+              disabled={loading}
+            >
+              {loading ? 'Перевіряємо...' : 'Увійти в акаунт'}
+            </button>
+            
+          </form>
+
+          <p className={styles.footer}>
+            Немає акаунту? 
+            <Link href="/register" className={styles.link}>
+              Зареєструватися
+            </Link>
           </p>
         </div>
-      </form>
-    </main>
+      </div>
+    </div>
   );
 }

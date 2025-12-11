@@ -2,7 +2,7 @@ import EventList from '../components/EventList';
 
 // Функція отримання даних з сервера
 async function getEvents() {
-  const res = await fetch('http://192.168.50.254:1337/api/events?populate=*', { 
+  const res = await fetch(`${API_URL}/api/events?populate=*`, { 
     cache: 'no-store' 
   });
   
@@ -12,6 +12,11 @@ async function getEvents() {
   
   const eventsData = await res.json();
   return eventsData.data; 
+}
+
+export const metadata = {
+  title: 'Головна | EventPort',
+  description: 'Знайдіть найкращі події у вашому місті.',
 }
 
 export default async function HomePage() {

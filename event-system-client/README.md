@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📅 EventPort — Frontend
 
-## Getting Started
+Сучасна платформа для пошуку, створення та відвідування подій.
+Це клієнтська частина (Frontend), побудована на **Next.js 14+ (App Router)** з використанням сучасного **Glassmorphism** дизайну.
 
-First, run the development server:
+![EventPort Screenshot](https://via.placeholder.com/1200x600?text=EventPort+Screenshot)
+*(Замініть це посилання на реальний скріншот вашої головної сторінки)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Технології
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **Framework:** Next.js 14 (App Router)
+* **Styling:** CSS Modules (Custom Glassmorphism UI)
+* **Icons:** Heroicons / SVG
+* **QR Codes:** `react-qr-code`
+* **Date Formatting:** Native JS `Intl.DateTimeFormat`
+* **Backend Interaction:** Fetch API
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ✨ Функціонал
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **Головна сторінка:** Список подій з фільтрацією (пошук, місто, категорія, дата).
+* **Автентифікація:** Реєстрація та вхід (JWT через Strapi).
+* **Ролі:**
+    * **Гість:** Перегляд подій, відгуків.
+    * **Користувач:** Купівля/реєстрація квитків, залишення відгуків, перегляд своїх квитків (QR).
+    * **Організатор:** Створення, редагування та видалення своїх подій, перегляд статистики продажів.
+* **Квитки:** Генерація унікального QR-коду для входу.
+* **Сканер (Verify):** Сторінка перевірки валідності квитка для контролю на вході.
+* **Дизайн:** Адаптивний інтерфейс з ефектами матового скла та анімаціями.
 
-## Learn More
+## 🛠️ Встановлення та запуск
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Клонуйте репозиторій:**
+    ```bash
+    git clone [https://github.com/ВАШ_НІК/event-app-frontend.git](https://github.com/ВАШ_НІК/event-app-frontend.git)
+    cd event-app-frontend
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Встановіть залежності:**
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **Налаштуйте змінні середовища:**
+    Створіть файл `.env.local` у корені проєкту:
+    ```bash
+    NEXT_PUBLIC_API_URL=http://localhost:1337
+    # Або ваша продакшн адреса Strapi (наприклад, з Strapi Cloud)
+    ```
 
-## Deploy on Vercel
+4.  **Запустіть локальний сервер:**
+    ```bash
+    npm run dev
+    ```
+    Відкрийте [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Структура проєкту
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* `/app` — Сторінки та роутинг (App Router).
+* `/components` — Перевикористовувані компоненти (Header, EventCard, Forms).
+* `/public` — Статичні файли.
+
+## 🌍 Деплой
+
+Цей проєкт оптимізовано для деплою на **Vercel**.
+1. Запуште код на GitHub.
+2. Імпортуйте проєкт у Vercel.
+3. Додайте змінну `NEXT_PUBLIC_API_URL` у налаштуваннях Vercel.
+
+---
+Created by [Ваше Ім'я]

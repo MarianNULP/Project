@@ -16,7 +16,7 @@ const formatDate = (dateString) => {
 function EventCard({ event }) {
   // Перевірка на наявність обкладинки
   const imageUrl = event.cover
-    ? `http://192.168.50.254:1337${event.cover.url}`
+    ? `${API_URL}${event.cover.url}`
     : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=60'; // Дефолтне гарне фото
 
   return (
@@ -54,7 +54,7 @@ export default function EventList({ initialEvents }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('http://192.168.50.254:1337/api/categories');
+        const res = await fetch('${API_URL}/api/categories');
         const data = await res.json();
         setAllCategories(data.data || []);
       } catch (err) { console.error("Err categories", err); }
@@ -90,7 +90,7 @@ export default function EventList({ initialEvents }) {
     if (date) queryString += `&filters[date][$gte]=${date}`;
 
     try {
-      const res = await fetch(`http://192.168.50.254:1337${queryString}`);
+      const res = await fetch(`${API_URL}${queryString}`);
       const data = await res.json();
       setEvents(data.data || []);
     } catch (err) {
@@ -108,20 +108,16 @@ export default function EventList({ initialEvents }) {
     setEvents(initialEvents);
   };
 
-return (
+  return (
     <div className={styles.container}>
-      
+
       {/* --- ЛІВА КОЛОНКА --- */}
       <div className={styles.resultsColumn}>
-        
-        {/* НОВИЙ ЗАГОЛОВОК (з правильними класами) */}
-        <div className={styles.headerRow}>
-           <h2 className={styles.pageTitle}>Події поруч з вами 🔥</h2>
-           <span className={styles.resultCount}>Знайдено: {events.length}</span>
-        </div>
+
+
 
         {loading && (
-          <div style={{textAlign: 'center', padding: 40, color: 'white', fontSize: '1.2rem'}}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'white', fontSize: '1.2rem' }}>
             🌀 Оновлюємо список...
           </div>
         )}
@@ -129,7 +125,7 @@ return (
         {!loading && events.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.9)', borderRadius: 20 }}>
             <p style={{ fontSize: '1.2rem', color: '#64748b' }}>На жаль, за цими фільтрами нічого не знайдено 😔</p>
-            <button onClick={resetFilters} className={styles.applyBtn} style={{marginTop: 10}}>
+            <button onClick={resetFilters} className={styles.applyBtn} style={{ marginTop: 10 }}>
               Скинути фільтри
             </button>
           </div>
@@ -145,11 +141,11 @@ return (
       {/* --- ПРАВА КОЛОНКА (ФІЛЬТРИ) --- */}
       <div className={styles.filtersColumn}>
         <div className={styles.filtersHeader}>
-            <span>⚙️</span> Фільтри пошуку
+          <span>⚙️</span> Фільтри пошуку
         </div>
-        
+
         <div className={styles.filterGroup}>
-          
+
           <div>
             <label className={styles.filterLabel}>Пошук за назвою</label>
             <input
@@ -159,26 +155,26 @@ return (
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          
+
           <div>
             <label className={styles.filterLabel}>Місто</label>
-            <input 
-              type="text" 
-              placeholder="Введіть місто..." 
-              value={city} 
-              onChange={(e) => setCity(e.target.value)} 
+            <input
+              type="text"
+              placeholder="Введіть місто..."
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
             />
           </div>
-          
+
           <div>
             <label className={styles.filterLabel}>Дата (від)</label>
-            <input 
-              type="date" 
-              value={date} 
-              onChange={(e) => setDate(e.target.value)} 
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
             />
           </div>
-          
+
           <div>
             <label className={styles.filterLabel}>Категорія</label>
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
@@ -188,11 +184,11 @@ return (
               ))}
             </select>
           </div>
-          
+
           <button onClick={() => handleSearch(null)} className={styles.applyBtn}>
             Застосувати
           </button>
-          
+
           <button onClick={resetFilters} className={styles.resetButton}>
             Скинути
           </button>
