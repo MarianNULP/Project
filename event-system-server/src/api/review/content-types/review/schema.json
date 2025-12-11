@@ -25,7 +25,7 @@
       "target": "api::event.event",
       "inversedBy": "reviews"
     },
-    "users_permissions_user": {
+    "user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",

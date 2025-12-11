@@ -12,7 +12,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:1337/api/auth/local', { // Ендпоінт для логіну
+      const res = await fetch('http://192.168.50.254:1337/api/auth/local', { // Ендпоінт для логіну
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier, password }), // Надсилаємо логін/пароль

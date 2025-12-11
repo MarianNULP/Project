@@ -1,19 +1,18 @@
 import Link from 'next/link';
-import { EventForm } from './EventForm'; 
+import EventOwnerControls from '@/components/EventOwnerControls'; 
 import ReviewSection from '@/components/ReviewSection';
 
-// Функція отримання даних
 async function getEvent(id) {
-  // populate=* завантажує всі поля, включаючи нові (price, type, etc)
-  const res = await fetch(`http://localhost:1337/api/events/${id}?populate=*`, {
-    cache: 'no-store' // Щоб бачити свіжі оновлення
+  // Додаємо populate для organizer.id, щоб порівняти його з поточним юзером
+  const query = `?populate[cover][fields]=url&populate[organizer][fields]=username&populate[organizer][fields]=id&populate[registrations][fields]=id`;
+  
+  const res = await fetch(`http://192.168.50.254:1337/api/events/${id}${query}`, {
+    cache: 'no-store'
   });
   
-  if (!res.ok) {
-    throw new Error('Подію не знайдено');
-  }
+  if (!res.ok) throw new Error('Подію не знайдено');
   const data = await res.json();
-  return data.data;
+  return data.data; // Якщо Strapi v4, тут повертається об'єкт з id та attributes. Якщо v5 - одразу об'єкт.
 }
 
 function getSimpleTextFromRich(description) {
@@ -21,15 +20,15 @@ function getSimpleTextFromRich(description) {
 }
 
 export default async function EventPage({ params }) {
-  const { id } = await params;
+  const { id } = await params; 
   const event = await getEvent(id);
 
-  const imageUrl = event.cover ? `http://localhost:1337${event.cover.url}` : null;
+  // Отримуємо ID організатора
+  // Увага: перевір в Strapi відповідь. Це може бути event.organizer.id або event.attributes.organizer.data.id
+  const organizerId = event.organizer?.id; 
 
-  // Визначаємо іконку для типу
+  const imageUrl = event.cover ? `http://192.168.50.254:1337${event.cover.url}` : null;
   const isOnline = event.type === 'online';
-  
-  // Форматуємо ціну
   const priceLabel = event.price && event.price > 0 ? `${event.price} UAH` : 'Безкоштовно';
 
   return (
@@ -40,7 +39,6 @@ export default async function EventPage({ params }) {
 
       <div className="event-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
         
-        {/* 1. Картинка на всю ширину */}
         {imageUrl && (
           <img 
             src={imageUrl} 
@@ -50,7 +48,6 @@ export default async function EventPage({ params }) {
         )}
 
         <div style={{ padding: '30px' }}>
-          {/* 2. Заголовок і Дата */}
           <h1 style={{ margin: '0 0 10px 0' }}>{event.title}</h1>
           
           <div style={{ color: '#7f8c8d', marginBottom: '20px' }}>
@@ -60,7 +57,6 @@ export default async function EventPage({ params }) {
             })}
           </div>
 
-          {/* 👇 3. НОВИЙ БЛОК ІНФОРМАЦІЇ (Grid) 👇 */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
@@ -71,48 +67,43 @@ export default async function EventPage({ params }) {
             marginBottom: '30px',
             border: '1px solid #eee'
           }}>
-            
-            {/* Ціна */}
             <div>
               <strong style={{ display: 'block', color: '#666', fontSize: '0.9rem' }}>ВАРТІСТЬ:</strong>
               <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#27ae60' }}>{priceLabel}</span>
             </div>
-
-            {/* Тип і Локація */}
             <div>
               <strong style={{ display: 'block', color: '#666', fontSize: '0.9rem' }}>
                 {isOnline ? '🌐 ОНЛАЙН' : `📍 МІСТО: ${event.city || 'Не вказано'}`}
               </strong>
               <span style={{ fontSize: '1.1rem' }}>
                 {event.location_details ? (
-                  isOnline ? <a href={event.location_details} target="_blank" style={{ color: '#3498db' }}>Посилання на трансляцію</a> : event.location_details
+                  isOnline ? <a href={event.location_details} target="_blank" style={{ color: '#3498db' }}>Посилання</a> : event.location_details
                 ) : 'Деталі уточнюються'}
               </span>
             </div>
-
-            {/* Кількість місць */}
             {event.max_capacity > 0 && (
               <div>
                 <strong style={{ display: 'block', color: '#666', fontSize: '0.9rem' }}>КІЛЬКІСТЬ МІСЦЬ:</strong>
-                <span style={{ fontSize: '1.1rem' }}>
-                  Ліміт: {event.max_capacity}
-                </span>
+                <span style={{ fontSize: '1.1rem' }}>Ліміт: {event.max_capacity}</span>
               </div>
             )}
           </div>
-          {/* 👆 КІНЕЦЬ НОВОГО БЛОКУ 👆 */}
 
           <hr style={{ margin: '25px 0', border: '0', borderTop: '1px solid #eee' }} />
 
-          {/* 4. Опис */}
           <div style={{ fontSize: '18px', lineHeight: '1.8', color: '#444' }}>
             {getSimpleTextFromRich(event.description)}
           </div>
 
           <hr style={{ margin: '40px 0', border: '0', borderTop: '1px solid #eee' }} />
 
-          {/* 5. Форма реєстрації */}
-          <EventForm eventName={event.title} eventId={event.id} />
+          {/* 👇 ЗАМІНИЛИ EventForm НА EventOwnerControls 👇 */}
+          <EventOwnerControls 
+             eventName={event.title} 
+             eventId={event.documentId || event.id} // Перевір, що приймає Strapi API (ID чи documentId)
+             organizerId={organizerId}
+             price={event.price || 0} 
+          />
         
         </div>
       </div>

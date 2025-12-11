@@ -2,9 +2,7 @@ import EventList from '../components/EventList';
 
 // Функція отримання даних з сервера
 async function getEvents() {
-  // ?populate=* потрібен для завантаження картинок
-  // cache: 'no-store' гарантує, що ми завжди бачимо свіжі дані
-  const res = await fetch('http://localhost:1337/api/events?populate=*', { 
+  const res = await fetch('http://192.168.50.254:1337/api/events?populate=*', { 
     cache: 'no-store' 
   });
   
@@ -21,9 +19,8 @@ export default async function HomePage() {
 
   return (
     <main>
-      <h1>📅 Портал майбутніх подій</h1>
+      {/* ❌ Прибрав зайвий H1, бо заголовок вже є в Header та EventList */}
       
-      {/* Ми прибрали AsyncManager, тепер тут тільки список для користувачів */}
       <EventList initialEvents={events} />
     </main>
   );

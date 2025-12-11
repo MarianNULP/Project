@@ -5,34 +5,33 @@ import { useState, useEffect } from 'react';
 import styles from './EventList.module.css';
 
 // --- Допоміжні функції ---
-function getSimpleTextFromRich(description) {
-  try { return description[0].children[0].text; } catch (e) { return ''; }
-}
-const formatDate = (date) => new Date(date).toLocaleDateString('uk-UA', {
-  day: 'numeric', month: 'short'
-});
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('uk-UA', {
+    day: 'numeric', month: 'long' // "12 грудня"
+  });
+};
 
-// --- Компонент Картки Події (Компактний) ---
+// --- Компонент Картки Події ---
 function EventCard({ event }) {
-  const imageUrl = event.cover ? `http://localhost:1337${event.cover.url}` : null;
-  
+  // Перевірка на наявність обкладинки
+  const imageUrl = event.cover
+    ? `http://192.168.50.254:1337${event.cover.url}`
+    : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=60'; // Дефолтне гарне фото
+
   return (
-    <Link 
-      href={`/events/${event.documentId}`} 
-      className={styles.eventCard}
-    >
-      <img 
-        src={imageUrl || 'https://via.placeholder.com/280x200?text=No+Image'} 
-        alt={event.title} 
-        className={styles.eventCardImage} 
+    <Link href={`/events/${event.documentId}`} className={styles.eventCard}>
+      <img
+        src={imageUrl}
+        alt={event.title}
+        className={styles.eventCardImage}
+        loading="lazy"
       />
       <div className={styles.eventCardContent}>
-        <h4 className={styles.eventCardTitle}>
-          {event.title}
-        </h4>
+        <h4 className={styles.eventCardTitle}>{event.title}</h4>
         <div className={styles.eventCardMeta}>
-          <span>{event.city || 'Онлайн'}</span> 
-          <span>{formatDate(event.date)}</span>
+          <span>📍 {event.city || 'Онлайн'}</span>
+          <span>📅 {formatDate(event.date)}</span>
         </div>
       </div>
     </Link>
@@ -46,50 +45,52 @@ export default function EventList({ initialEvents }) {
   const [allCategories, setAllCategories] = useState([]);
 
   // Стани для фільтрів
-  const [title, setTitle] = useState(''); 
+  const [title, setTitle] = useState('');
   const [city, setCity] = useState('');
-  const [category, setCategory] = useState(''); 
+  const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
 
-  // Завантажуємо категорії
+  // Завантаження категорій та міста юзера
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('http://localhost:1337/api/categories');
+        const res = await fetch('http://192.168.50.254:1337/api/categories');
         const data = await res.json();
         setAllCategories(data.data || []);
-      } catch (err) { console.error("Не вдалося завантажити категорії", err); }
+      } catch (err) { console.error("Err categories", err); }
     };
     fetchCategories();
 
     const userData = localStorage.getItem('user');
     if (userData) {
-      const user = JSON.parse(userData);
-      if (user.city) {
-        setCity(user.city); // Встановлюємо місто у фільтр
-        // Викликаємо пошук з містом користувача
-        handleSearch(user.city); 
-      }
+      try {
+        const user = JSON.parse(userData);
+        if (user.city) {
+          setCity(user.city);
+          handleSearch(user.city); // Авто-пошук по місту
+        }
+      } catch (e) { }
     }
   }, []);
 
   // Функція ПОШУКУ
   const handleSearch = async (forcedCity = null) => {
     setLoading(true);
+
+    // Починаємо формувати запит
     let queryString = '/api/events?populate=*';
 
-    const searchCity = forcedCity || city;
+    // Логіка міста: або те, що передали примусово (на старті), або те, що в інпуті
+    const searchCity = forcedCity !== null ? forcedCity : city;
 
-    // Збираємо рядок запиту з усіх фільтрів
+    // ⚠️ ВИПРАВЛЕНО: Прибрані дублікати фільтрів
     if (title) queryString += `&filters[title][$contains]=${title}`;
     if (searchCity) queryString += `&filters[city][$contains]=${searchCity}`;
-    if (title) queryString += `&filters[title][$contains]=${title}`;
-    if (city) queryString += `&filters[city][$contains]=${city}`;
     if (category) queryString += `&filters[categories][id][$eq]=${category}`;
     if (date) queryString += `&filters[date][$gte]=${date}`;
 
     try {
-      const res = await fetch(`http://localhost:1337${queryString}`);
+      const res = await fetch(`http://192.168.50.254:1337${queryString}`);
       const data = await res.json();
       setEvents(data.data || []);
     } catch (err) {
@@ -99,7 +100,6 @@ export default function EventList({ initialEvents }) {
     }
   };
 
-  // Скидання фільтрів
   const resetFilters = () => {
     setTitle('');
     setCity('');
@@ -108,19 +108,33 @@ export default function EventList({ initialEvents }) {
     setEvents(initialEvents);
   };
 
-  return (
-    // Головний Flex-контейнер
+return (
     <div className={styles.container}>
       
-      {/* ЛІВА КОЛОНКА: Тільки Результати */}
+      {/* --- ЛІВА КОЛОНКА --- */}
       <div className={styles.resultsColumn}>
         
-        {loading && <p>Завантаження результатів...</p>}
-        {!loading && events.length === 0 && (
-          <p style={{ textAlign: 'center', color: 'grey' }}>Нічого не знайдено 😔</p>
+        {/* НОВИЙ ЗАГОЛОВОК (з правильними класами) */}
+        <div className={styles.headerRow}>
+           <h2 className={styles.pageTitle}>Події поруч з вами 🔥</h2>
+           <span className={styles.resultCount}>Знайдено: {events.length}</span>
+        </div>
+
+        {loading && (
+          <div style={{textAlign: 'center', padding: 40, color: 'white', fontSize: '1.2rem'}}>
+            🌀 Оновлюємо список...
+          </div>
         )}
 
-        {/* ЩІЛЬНА СІТКА */}
+        {!loading && events.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '60px', background: 'rgba(255,255,255,0.9)', borderRadius: 20 }}>
+            <p style={{ fontSize: '1.2rem', color: '#64748b' }}>На жаль, за цими фільтрами нічого не знайдено 😔</p>
+            <button onClick={resetFilters} className={styles.applyBtn} style={{marginTop: 10}}>
+              Скинути фільтри
+            </button>
+          </div>
+        )}
+
         <div className={styles.eventGrid}>
           {!loading && events.map((event) => (
             <EventCard key={event.id} event={event} />
@@ -128,42 +142,60 @@ export default function EventList({ initialEvents }) {
         </div>
       </div>
 
-      {/* ПРАВА КОЛОНКА: Панель фільтрів (з усіма полями) */}
+      {/* --- ПРАВА КОЛОНКА (ФІЛЬТРИ) --- */}
       <div className={styles.filtersColumn}>
-        
-        {/* 👇 ПОШУК ЗА НАЗВОЮ (ПЕРЕНЕСЛИ СЮДИ) 👇 */}
-        <div className={styles.searchBox}>
-          <label htmlFor="titleSearch" className={styles.filterLabel}>Пошук за назвою</label>
-          <input
-            id="titleSearch"
-            type="text"
-            placeholder="Введіть назву..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={styles.searchInput}
-          />
+        <div className={styles.filtersHeader}>
+            <span>⚙️</span> Фільтри пошуку
         </div>
-
-        <h3 className={styles.filtersHeader}>⚙️ Фільтри</h3>
         
         <div className={styles.filterGroup}>
           
-          <label className={styles.filterLabel}>Місто:</label>
-          <input type="text" placeholder="Введіть місто..." value={city} onChange={(e) => setCity(e.target.value)} />
+          <div>
+            <label className={styles.filterLabel}>Пошук за назвою</label>
+            <input
+              type="text"
+              placeholder="Концерт, вечірка..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
           
-          <label className={styles.filterLabel}>Дата (після):</label>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <div>
+            <label className={styles.filterLabel}>Місто</label>
+            <input 
+              type="text" 
+              placeholder="Введіть місто..." 
+              value={city} 
+              onChange={(e) => setCity(e.target.value)} 
+            />
+          </div>
           
-          <label className={styles.filterLabel}>Категорія:</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">-- Всі категорії --</option>
-            {allCategories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
+          <div>
+            <label className={styles.filterLabel}>Дата (від)</label>
+            <input 
+              type="date" 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)} 
+            />
+          </div>
           
-          <button onClick={() => handleSearch(null)} style={{ background: '#3498db', marginTop: '10px' }}>Застосувати</button>
-          <button onClick={resetFilters} className={styles.resetButton}>Скинути</button>
+          <div>
+            <label className={styles.filterLabel}>Категорія</label>
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">-- Всі категорії --</option>
+              {allCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          <button onClick={() => handleSearch(null)} className={styles.applyBtn}>
+            Застосувати
+          </button>
+          
+          <button onClick={resetFilters} className={styles.resetButton}>
+            Скинути
+          </button>
         </div>
       </div>
     </div>

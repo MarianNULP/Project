@@ -1,132 +1,226 @@
+/* components/EventList.module.css */
+
+/* --- ГОЛОВНИЙ КОНТЕЙНЕР --- */
+.container {
+  display: flex;
+  gap: 40px;            /* Більший відступ між картками і фільтром */
+  width: 90%;           /* Займаємо 90% екрану, а не фіксовані 1200px */
+  max-width: 1600px;    /* Обмеження тільки для гігантських моніторів */
+  margin: 40px auto;
+  padding-bottom: 60px; /* Відступ знизу, щоб не прилипало */
+  align-items: flex-start;
+}
+
+/* --- ЛІВА КОЛОНКА (ПОДІЇ) --- */
+.resultsColumn {
+  flex: 1; /* Займає всю доступну ширину */
+}
+
+/* Заголовок і лічильник */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Тонка лінія розділення */
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: white; /* Білий текст для темного фону */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Тінь, щоб читалось навіть на світлому */
+}
+
+.resultCount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* СІТКА КАРТОК (Адаптивна) */
+.eventGrid {
+  display: grid;
+  /* Автоматично вміщує стільки карток, скільки влізе (мін. ширина 300px) */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* --- КАРТКА ПОДІЇ --- */
 .eventCard {
-  text-decoration: none;
-  color: inherit;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background: #fff;
+  border-radius: 20px; /* Більш округлі кути */
+  overflow: hidden;
+  text-decoration: none;
+  color: #333;
+  
+  /* Сильна тінь для ефекту "польоту" */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
 }
 
 .eventCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
 
 .eventCardImage {
   width: 100%;
-  height: 200px; 
+  height: 200px; /* Трохи вищі фото */
   object-fit: cover;
 }
 
 .eventCardContent {
-  padding: 15px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
 .eventCardTitle {
-  margin: 0 0 10px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
 }
 
 .eventCardMeta {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.9rem;
-  color: #666;
-  margin-top: auto; 
+  color: #64748b;
+  font-weight: 500;
+  padding-top: 15px;
+  border-top: 1px solid #f1f5f9;
 }
 
-.eventGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-}
-
-.container {
-    display: flex;
-    gap: 30px;
-}
-
-.resultsColumn {
-    flex: 1;
-}
-
+/* --- ПРАВА КОЛОНКА (ФІЛЬТРИ) --- */
 .filtersColumn {
-    width: 300px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    height: fit-content;
+  width: 340px; /* Трохи ширша панель */
+  flex-shrink: 0;
+  position: sticky;
+  top: 40px;
+  
+  /* Glassmorphism (Скло) */
+  background: rgba(255, 255, 255, 0.9); /* Більш непрозоре, щоб текст читався */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  padding: 30px;
+  
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
 }
-.searchBox {
-    position: relative;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.searchInput {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
+
 .filtersHeader {
-    margin-top: 0;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
 .filterGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .filterLabel {
-    font-size: 0.9rem;
-    color: #555;
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.filtersColumn input[type="text"],
-.filtersColumn input[type="date"],
+/* Стилізація інпутів */
+.filtersColumn input,
 .filtersColumn select {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box; 
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: all 0.2s;
 }
 
-.filtersColumn button {
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
+.filtersColumn input:focus,
+.filtersColumn select:focus {
+  background: #fff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+/* Кнопки */
+.applyBtn {
+  background: #6366f1;
   color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.applyButton {
-  background: #3498db;
-}
-
-.applyButton:hover {
-  background: #2980b9;
+.applyBtn:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
 }
 
 .resetButton {
-  background: #95a5a6;
+  background: transparent;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .resetButton:hover {
-  background: #7f8c8d;
+  border-color: #94a3b8;
+  color: #334155;
+  background: white;
+}
+
+/* Мобільна версія */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column-reverse; /* Фільтри нагору */
+    width: 95%;
+  }
+  
+  .filtersColumn {
+    width: 100%;
+    position: static;
+  }
+  
+  .eventGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
 }

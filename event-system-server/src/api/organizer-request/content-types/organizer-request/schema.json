@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organizer_requests",
+  "info": {
+    "singularName": "organizer-request",
+    "pluralName": "organizer-requests",
+    "displayName": "OrganizerRequest"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "companyName": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "request_status": {
+      "type": "enumeration",
+      "default": "pending",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "organizer_requests"
+    },
+    "contact_email": {
+      "type": "string"
+    }
+  }
+}

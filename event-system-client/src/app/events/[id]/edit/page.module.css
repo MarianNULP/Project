@@ -1,0 +1,241 @@
+/* app/events/[id]/edit/page.module.css */
+
+/* Анімація появи */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95); /* Більш непрозорий для читабельності */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: #1e293b;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .grid2 { grid-template-columns: 1fr; }
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin-left: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Inputs */
+.input, .textarea, .select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #f8fafc;
+  color: #334155;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.input:focus, .textarea:focus, .select:focus {
+  outline: none;
+  background: #fff;
+  border-color: #6366f1; /* Трохи інший відтінок для Edit (Indigo) */
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Helper Buttons (AI, Photo) */
+.helperBtn {
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.helperBtn:hover:not(:disabled) {
+  background: #c7d2fe;
+}
+
+.helperBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Image Area - Specific for Edit */
+.imageUploadArea {
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.imagePreviewRow {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.imgBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.imgLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.previewImg {
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: 2px solid #fff;
+}
+
+.newPreview {
+  border-color: #22c55e; /* Зелена рамка для нового */
+}
+
+/* Categories */
+.categoriesBox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.categoryTag {
+  cursor: pointer;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #64748b;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+}
+
+.categoryTag input { display: none; }
+
+.categoryTag.active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Buttons Bottom Row */
+.buttonRow {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.submitBtn {
+  flex: 2;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  transition: transform 0.2s;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  background: #e2e8f0;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #cbd5e1;
+  color: #1e293b;
+}

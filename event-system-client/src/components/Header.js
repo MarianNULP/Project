@@ -1,102 +1,131 @@
-"use client"; // Обов'язково! localStorage працює тільки в браузері.
+"use client"; 
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link'; // Краще використовувати Link замість a href для швидкості
 
 export default function Header() {
-    const [user, setUser] = useState(null); // Стан для зберігання даних користувача
+    const [user, setUser] = useState(null);
+    const pathname = usePathname();
 
     useEffect(() => {
-        // Цей код виконається, коли компонент завантажиться в браузері
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            setUser(JSON.parse(userData)); // Якщо юзер є в пам'яті - записуємо його в стан
-        }
-    }, []); // Пустий масив означає "виконати 1 раз при завантаженні"
+        const fetchLatestUserData = async () => {
+            const jwt = localStorage.getItem('jwt');
+            const storedUser = localStorage.getItem('user');
+            
+            if (jwt && storedUser) {
+                try {
+                    const res = await fetch('http://127.0.0.1:1337/api/users/me?populate=role', {
+                        headers: { Authorization: `Bearer ${jwt}` }
+                    });
+                    
+                    if (res.ok) {
+                        const freshData = await res.json();
+                        setUser(freshData);
+                        localStorage.setItem('user', JSON.stringify(freshData));
+                    } else {
+                        setUser(JSON.parse(storedUser));
+                    }
+                } catch (error) {
+                    console.error("Помилка оновлення даних юзера:", error);
+                    setUser(JSON.parse(storedUser));
+                }
+            }
+        };
+
+        fetchLatestUserData();
+    }, []);
 
     const handleLogout = () => {
-        // Очищуємо пам'ять
         localStorage.removeItem('jwt');
         localStorage.removeItem('user');
         setUser(null);
-        window.location.href = '/'; // Повертаємо на головну
+        window.location.href = '/'; 
     };
 
     return (
         <header style={{
-            background: 'white',
+            /* 🔥 GLASSMORPHISM (ПРОЗОРИЙ ФОН) */
+            background: 'rgba(255, 255, 255, 0.1)', 
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+            
             padding: '20px 40px',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '30px'
+            marginBottom: '0' /* Прибираємо відступ, бо в EventList він є */
         }}>
-            {/* Логотип, який веде на головну */}
-            <a href="/" style={{
-                fontWeight: 'bold',
-                fontSize: '24px',
-                color: '#2c3e50',
-                textDecoration: 'none'
+            {/* ТЕКСТ ТЕПЕР БІЛИЙ */}
+            <Link href="/" style={{
+                fontWeight: '800', 
+                fontSize: '1.5rem', 
+                color: 'white', 
+                textDecoration: 'none',
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '10px',
+                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}>
-                EventPort
-            </a>
+                🗓️ Портал майбутніх подій
+            </Link>
 
-            {/* Навігація */}
             <nav style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                 {user ? (
-                    // Стан, ЯКЩО КОРИСТУВАЧ ЗАЛОГІНЕНИЙ
                     <>
-                        <span>Вітаємо, **{user.username}**!</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+                            Вітаємо, <strong>{user.username}</strong>!
+                        </span>
 
-                        {/* Ось нове посилання, яке ми додаємо: */}
-                        <a href="/create-event" style={{
-                            color: '#27ae60',
-                            fontWeight: 'bold',
-                            textDecoration: 'none'
-                        }}>
-                            + Створити подію
-                        </a>
+                        {pathname !== '/profile' && (
+                            <Link href="/profile" style={{ 
+                                color: 'white', 
+                                textDecoration: 'none', 
+                                fontWeight: '600',
+                                padding: '8px 16px',
+                                background: 'rgba(255,255,255,0.2)',
+                                borderRadius: '8px'
+                            }}>
+                                Мій Профіль
+                            </Link>
+                        )}
 
-                        <a href="/profile" style={{ color: '#3498db', textDecoration: 'none' }}>
-                            Мій Профіль
-                        </a>
-
-                        {/* Ваша кнопка "Вийти" (скопіюйте її з вашого старого коду) */}
                         <button onClick={handleLogout} style={{
-                            background: 'none',
-                            border: '1px solid #e74c3c',
-                            color: '#e74c3c',
-                            padding: '8px 12px',
-                            borderRadius: '6px'
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            background: 'rgba(255, 255, 255, 0.9)', // Біла кнопка
+                            border: 'none',
+                            color: '#e74c3c', // Червоний текст
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            transition: 'transform 0.2s'
                         }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
                             Вийти
                         </button>
                     </>
                 ) : (
-                    // Стан, ЯКЩО КОРИСТУВАЧ - ГІСТЬ
                     <>
-                        <a href="/login" style={{ color: '#3498db', textDecoration: 'none' }}>
-                            Увійти
-                        </a>
-                        <a href="/register" style={{
-                            background: '#3498db',
-                            color: 'white',
-                            padding: '8px 15px',
-                            borderRadius: '6px',
-                            textDecoration: 'none'
+                        <Link href="/login" style={{ color: 'white', textDecoration: 'none', fontWeight: 600 }}>Увійти</Link>
+                        <Link href="/register" style={{
+                            background: 'white', color: '#333', padding: '10px 20px',
+                            borderRadius: '30px', textDecoration: 'none', fontWeight: 'bold'
                         }}>
                             Реєстрація
-                        </a>
+                        </Link>
                     </>
                 )}
-                {/* Показуємо іконку адмінки, тільки якщо це користувач 'Marian' */}
+                
                 {user && user.username === 'Marian' && (
-                    <a href="/admin" style={{ color: '#7f8c8d', textDecoration: 'none' }}>
+                    <a href="http://192.168.50.254:1337/admin" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', fontSize: '24px' }} title="Адмін-панель">
                         🛡️
                     </a>
                 )}
-
-
             </nav>
         </header>
     );
