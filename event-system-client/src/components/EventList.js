@@ -78,7 +78,7 @@ export default function EventList({ initialEvents }) {
     setLoading(true);
 
     // Починаємо формувати запит
-    let queryString = '/api/events?populate=*';
+    let queryString = `/api/events?populate=*`;
 
     // Логіка міста: або те, що передали примусово (на старті), або те, що в інпуті
     const searchCity = forcedCity !== null ? forcedCity : city;
