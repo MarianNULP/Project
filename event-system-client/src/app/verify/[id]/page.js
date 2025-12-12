@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { API_URL } from '@/utils/api';
 
 export default function VerifyTicketPage({ params }) {
   const { id } = use(params);

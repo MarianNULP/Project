@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from '@/utils/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 // Імпортуємо стилі

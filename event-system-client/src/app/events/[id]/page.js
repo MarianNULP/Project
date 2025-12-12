@@ -1,3 +1,4 @@
+import { API_URL } from '@/utils/api';
 import Link from 'next/link';
 import EventOwnerControls from '@/components/EventOwnerControls'; 
 import ReviewSection from '@/components/ReviewSection';

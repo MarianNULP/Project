@@ -1,5 +1,5 @@
 "use client";
-
+import { API_URL } from '@/utils/api';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import styles from './EventList.module.css';

@@ -1,3 +1,4 @@
+import { API_URL } from '@/utils/api';
 import EventList from '../components/EventList';
 
 // Функція отримання даних з сервера

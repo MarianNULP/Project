@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import QRCode from "react-qr-code";
 import styles from './page.module.css'; // Імпорт стилів
-
-// 👇 ВАША IP АДРЕСА
-const API_URL = `${API_URL}`; 
-const SITE_URL = 'http://192.168.50.254:3000';
+import { API_URL } from '@/utils/api';
 
 export default function ProfilePage() {
     const [user, setUser] = useState(null);
@@ -320,7 +317,7 @@ export default function ProfilePage() {
                         <h3 style={{color: '#333', marginTop: 0}}>Ваш квиток 🎫</h3>
                         <div style={{background: 'white', padding: 10, display: 'inline-block', borderRadius: 10}}>
                             <QRCode
-                                value={`${SITE_URL}/verify/${selectedTicketForQR.documentId}`}
+                                value={`${siteUrl}/verify/${selectedTicketForQR.documentId}`}
                                 size={200}
                             />
                         </div>

@@ -1,12 +1,12 @@
 "use client";
-
+import { API_URL } from '@/utils/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css'; // Імпортуємо нові стилі
 
 // 👇 Твої ключі
-const GOOGLE_API_KEY = "AIzaSyBuQa5eBHemCQQAlidEflw_qcfMsBrVjSE";
-const UNSPLASH_ACCESS_KEY = "TRlCBMLYF8YpxEkMKEdcmdkyhNU6hcl17yPY-dP6UZc";
+const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
 export default function CreateEventPage() {
   const [title, setTitle] = useState('');

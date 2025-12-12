@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './ReviewSection.module.css'; // Імпорт стилів
+import { API_URL } from '@/utils/api';
 
 export default function ReviewSection({ eventId }) {
   const [reviews, setReviews] = useState([]);
