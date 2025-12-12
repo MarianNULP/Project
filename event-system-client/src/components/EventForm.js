@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './EventForm.module.css'; // Імпорт стилів
 
+
 export function EventForm({ eventName, eventId, price }) {
   const [user, setUser] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);

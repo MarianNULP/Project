@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import styles from './Header.module.css'; 
+import styles from './Header.module.css';
+import { API_URL } from '@/utils/api'; 
 
 export default function Header() {
     const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ export default function Header() {
                 
                 try {
                     // Фоново оновлюємо дані
-                    const res = await fetch('http://127.0.0.1:1337/api/users/me?populate=role', {
+                    const res = await fetch(`${API_URL}/api/users/me?populate=role`, {
                         headers: { Authorization: `Bearer ${jwt}` }
                     });
                     
@@ -125,7 +126,7 @@ export default function Header() {
                         )}
                         
                         {user && user.username === 'Marian' && (
-                            <a href=`${API_URL}/admin` target="_blank" rel="noopener noreferrer" className={styles.adminLink} title="Адмін-панель">
+                            <a href={`${API_URL}/admin`} target="_blank" rel="noopener noreferrer" className={styles.adminLink} title="Адмін-панель">
                                 🛡️
                             </a>
                         )}
