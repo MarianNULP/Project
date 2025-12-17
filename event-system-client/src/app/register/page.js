@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import styles from './page.module.css'; // Імпортуємо стилі
+import styles from './page.module.css'; 
 import { API_URL } from '@/utils/api';
 
 export default function RegisterPage() {
@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false); // Додали стан завантаження
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

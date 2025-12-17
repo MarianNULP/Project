@@ -3,9 +3,8 @@
 import { API_URL } from '@/utils/api';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './page.module.css'; // Імпорт нових стилів
+import styles from './page.module.css'; 
 
-// 👇 Ваші ключі
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 

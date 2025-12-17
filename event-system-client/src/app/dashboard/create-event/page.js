@@ -2,9 +2,8 @@
 import { API_URL } from '@/utils/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './page.module.css'; // Імпортуємо нові стилі
+import styles from './page.module.css';
 
-// 👇 Твої ключі
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
@@ -41,7 +40,6 @@ export default function CreateEventPage() {
 
   const fetchCategories = async () => {
     try {
-      // ⚠️ Переконайся, що IP правильний. Якщо працюєш локально, краще 127.0.0.1 або localhost
       const res = await fetch(`${API_URL}/api/categories`);
       const data = await res.json();
       setAllCategories(data.data || []);
@@ -51,9 +49,9 @@ export default function CreateEventPage() {
   };
 
   const handleCategoryChange = (categoryId) => {
-    setSelectedCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(id => id !== categoryId) 
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
         : [...prev, categoryId]
     );
   };
@@ -72,24 +70,39 @@ export default function CreateEventPage() {
       if (data.candidates?.[0]?.content) {
         setDescription(data.candidates[0].content.parts[0].text);
       }
-    } catch (error) { alert("AI помилка"); } 
+    } catch (error) { alert("AI помилка"); }
     finally { setAiLoading(false); }
   };
 
-  const findImage = async () => {
+const findImage = async () => {
+    // 1. Перевірка тільки назви
     if (!title) { alert("Введіть назву події!"); return; }
+    
     setImgLoading(true);
     try {
-      const searchRes = await fetch(`https://api.unsplash.com/search/photos?query=${title} ${city}&per_page=1&client_id=${UNSPLASH_ACCESS_KEY}`);
+      const searchRes = await fetch(`https://api.unsplash.com/search/photos?query=${title}&per_page=30&client_id=${UNSPLASH_ACCESS_KEY}`);
       const searchData = await searchRes.json();
+
       if (searchData.results?.length > 0) {
-        const imageUrl = searchData.results[0].urls.regular;
+        const randomIndex = Math.floor(Math.random() * searchData.results.length);
+        const randomPhoto = searchData.results[randomIndex];
+
+        const imageUrl = randomPhoto.urls.regular;
+
         const imgResponse = await fetch(imageUrl);
         const blob = await imgResponse.blob();
+        
         setFile(new File([blob], "unsplash-image.jpg", { type: "image/jpeg" }));
-      } else { alert("Фото не знайдено :("); }
-    } catch (err) { console.error(err); alert("Помилка пошуку фото"); } 
-    finally { setImgLoading(false); }
+        
+      } else { 
+        alert("Фото не знайдено за цією назвою :("); 
+      }
+    } catch (err) { 
+      console.error(err); 
+      alert("Помилка пошуку фото"); 
+    } finally { 
+      setImgLoading(false); 
+    }
   };
 
   const uploadFile = async (jwt) => {
@@ -111,7 +124,7 @@ export default function CreateEventPage() {
     e.preventDefault();
     setStatus('loading');
     if (!user) return;
-    
+
     const jwt = localStorage.getItem('jwt');
     let fileId = null;
 
@@ -144,7 +157,7 @@ export default function CreateEventPage() {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      
+
       setStatus('success');
       router.push('/profile');
     } catch (err) {
@@ -153,40 +166,40 @@ export default function CreateEventPage() {
     }
   };
 
-  if (!user) return <div style={{textAlign: 'center', marginTop: 100}}>Завантаження...</div>;
+  if (!user) return <div style={{ textAlign: 'center', marginTop: 100 }}>Завантаження...</div>;
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Створити нову подію 🚀</h1>
-        <p style={{color: '#7f8c8d'}}>Заповніть деталі, щоб розповісти світу про ваш івент</p>
+        <p style={{ color: '#7f8c8d' }}>Заповніть деталі, щоб розповісти світу про ваш івент</p>
       </header>
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        
+
         {/* Назва */}
         <div className={styles.section}>
           <label className={styles.label}>Назва події</label>
-          <input 
-            className={styles.input} 
-            type="text" 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="Наприклад: Вечір джазу..." 
-            required 
+          <input
+            className={styles.input}
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Наприклад: Вечір джазу..."
+            required
           />
         </div>
 
         {/* Місто */}
         <div className={styles.section}>
           <label className={styles.label}>Місто проведення</label>
-          <input 
-            className={styles.input} 
-            type="text" 
-            value={city} 
-            onChange={(e) => setCity(e.target.value)} 
-            placeholder="Київ, Львів..." 
-            required 
+          <input
+            className={styles.input}
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Київ, Львів..."
+            required
           />
         </div>
 
@@ -194,34 +207,34 @@ export default function CreateEventPage() {
         <div className={styles.section}>
           <div className={styles.label}>
             <span>Опис події</span>
-            <button 
-              type="button" 
-              onClick={generateDescription} 
-              disabled={aiLoading || !title} 
+            <button
+              type="button"
+              onClick={generateDescription}
+              disabled={aiLoading || !title}
               className={styles.helperBtn}
               title="Штучний інтелект напише опис за вас"
             >
               {aiLoading ? '✨ Пишу...' : '✨ Auto-Write with AI'}
             </button>
           </div>
-          <textarea 
-            className={styles.textarea} 
-            value={description} 
-            onChange={(e) => setDescription(e.target.value)} 
-            required 
-            placeholder="Детальний опис вашої події..." 
+          <textarea
+            className={styles.textarea}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            placeholder="Детальний опис вашої події..."
           />
         </div>
 
         {/* Дата */}
         <div className={styles.section}>
           <label className={styles.label}>Дата та час</label>
-          <input 
-            className={styles.input} 
-            type="datetime-local" 
-            value={date} 
-            onChange={(e) => setDate(e.target.value)} 
-            required 
+          <input
+            className={styles.input}
+            type="datetime-local"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
           />
         </div>
 
@@ -229,9 +242,9 @@ export default function CreateEventPage() {
         <div className={styles.grid2}>
           <div className={styles.section}>
             <label className={styles.label}>Тип події</label>
-            <select 
-              className={styles.select} 
-              value={type} 
+            <select
+              className={styles.select}
+              value={type}
               onChange={(e) => setType(e.target.value)}
             >
               <option value="offline">🏛️ Офлайн</option>
@@ -242,12 +255,12 @@ export default function CreateEventPage() {
             <label className={styles.label}>
               {type === 'online' ? 'Посилання' : 'Адреса'}
             </label>
-            <input 
-              className={styles.input} 
-              type="text" 
-              value={locationDetails} 
-              onChange={(e) => setLocationDetails(e.target.value)} 
-              placeholder={type === 'online' ? 'Zoom/Meet link...' : 'вул. Хрещатик, 1'} 
+            <input
+              className={styles.input}
+              type="text"
+              value={locationDetails}
+              onChange={(e) => setLocationDetails(e.target.value)}
+              placeholder={type === 'online' ? 'Zoom/Meet link...' : 'вул. Хрещатик, 1'}
             />
           </div>
         </div>
@@ -256,24 +269,24 @@ export default function CreateEventPage() {
         <div className={styles.grid2}>
           <div className={styles.section}>
             <label className={styles.label}>Ціна (UAH)</label>
-            <input 
-              className={styles.input} 
-              type="number" 
-              min="0" 
-              value={price} 
-              onChange={(e) => setPrice(e.target.value)} 
-              placeholder="0 = Безкоштовно" 
+            <input
+              className={styles.input}
+              type="number"
+              min="0"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="0 = Безкоштовно"
             />
           </div>
           <div className={styles.section}>
             <label className={styles.label}>Кількість місць</label>
-            <input 
-              className={styles.input} 
-              type="number" 
-              min="0" 
-              value={maxCapacity} 
-              onChange={(e) => setMaxCapacity(e.target.value)} 
-              placeholder="0 = Безліміт" 
+            <input
+              className={styles.input}
+              type="number"
+              min="0"
+              value={maxCapacity}
+              onChange={(e) => setMaxCapacity(e.target.value)}
+              placeholder="0 = Безліміт"
             />
           </div>
         </div>
@@ -282,29 +295,29 @@ export default function CreateEventPage() {
         <div className={styles.section}>
           <div className={styles.label}>
             <span>Обкладинка</span>
-            <button 
-              type="button" 
-              onClick={findImage} 
-              disabled={imgLoading || !title} 
+            <button
+              type="button"
+              onClick={findImage}
+              disabled={imgLoading || !title}
               className={styles.helperBtn}
             >
               {imgLoading ? '🔍 Шукаю...' : '📸 Знайти в Unsplash'}
             </button>
           </div>
-          
+
           <div className={styles.imageUploadArea}>
             {file && (
-              <img 
-                src={URL.createObjectURL(file)} 
-                alt="Preview" 
-                className={styles.previewImg} 
+              <img
+                src={URL.createObjectURL(file)}
+                alt="Preview"
+                className={styles.previewImg}
               />
             )}
             <div className={styles.fileInputWrapper}>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={(e) => setFile(e.target.files[0])} 
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files[0])}
               />
             </div>
           </div>
@@ -314,17 +327,17 @@ export default function CreateEventPage() {
         <div className={styles.section}>
           <label className={styles.label}>Оберіть категорії</label>
           <div className={styles.categoriesBox}>
-            {allCategories.length === 0 && <span style={{color:'#999'}}>Завантаження...</span>}
-            
+            {allCategories.length === 0 && <span style={{ color: '#999' }}>Завантаження...</span>}
+
             {allCategories.map(cat => (
-              <label 
-                key={cat.id} 
+              <label
+                key={cat.id}
                 className={`${styles.categoryTag} ${selectedCategories.includes(cat.id) ? styles.active : ''}`}
               >
-                <input 
-                  type="checkbox" 
-                  checked={selectedCategories.includes(cat.id)} 
-                  onChange={() => handleCategoryChange(cat.id)} 
+                <input
+                  type="checkbox"
+                  checked={selectedCategories.includes(cat.id)}
+                  onChange={() => handleCategoryChange(cat.id)}
                 />
                 {selectedCategories.includes(cat.id) ? '✓ ' : ''}
                 {cat.name}
@@ -335,9 +348,9 @@ export default function CreateEventPage() {
 
         {error && <div className={styles.error}>⚠️ {error}</div>}
 
-        <button 
-          type="submit" 
-          disabled={status === 'loading'} 
+        <button
+          type="submit"
+          disabled={status === 'loading'}
           className={styles.submitBtn}
         >
           {status === 'loading' ? 'Публікуємо...' : 'Опублікувати подію 🎉'}

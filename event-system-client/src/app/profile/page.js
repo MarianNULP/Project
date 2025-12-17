@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import QRCode from "react-qr-code";
-import styles from './page.module.css'; // Імпорт стилів
+import styles from './page.module.css';
 import { API_URL } from '@/utils/api';
 
 export default function ProfilePage() {
+    const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const [user, setUser] = useState(null);
     const [registrations, setRegistrations] = useState([]);
     const [myEvents, setMyEvents] = useState([]);

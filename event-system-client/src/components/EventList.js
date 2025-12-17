@@ -12,12 +12,21 @@ const formatDate = (dateString) => {
   });
 };
 
-// --- Компонент Картки Події ---
+// --- Компонент Картки Події (ВИПРАВЛЕНО) ---
 function EventCard({ event }) {
-  // Перевірка на наявність обкладинки
-  const imageUrl = event.cover
-    ? `${API_URL}${event.cover.url}`
-    : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=60'; // Дефолтне гарне фото
+  // 1. Дефолтне гарне фото
+  let imageUrl = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=60';
+
+  // 2. Логіка обробки URL від Strapi
+  if (event.cover && event.cover.url) {
+    // Якщо посилання вже повне (починається з http/https), беремо його як є
+    if (event.cover.url.startsWith('http')) {
+      imageUrl = event.cover.url;
+    } else {
+      // Якщо посилання відносне (/uploads/...), додаємо наш API_URL
+      imageUrl = `${API_URL}${event.cover.url}`;
+    }
+  }
 
   return (
     <Link href={`/events/${event.documentId}`} className={styles.eventCard}>
@@ -83,7 +92,6 @@ export default function EventList({ initialEvents }) {
     // Логіка міста: або те, що передали примусово (на старті), або те, що в інпуті
     const searchCity = forcedCity !== null ? forcedCity : city;
 
-    // ⚠️ ВИПРАВЛЕНО: Прибрані дублікати фільтрів
     if (title) queryString += `&filters[title][$contains]=${title}`;
     if (searchCity) queryString += `&filters[city][$contains]=${searchCity}`;
     if (category) queryString += `&filters[categories][id][$eq]=${category}`;
@@ -113,8 +121,6 @@ export default function EventList({ initialEvents }) {
 
       {/* --- ЛІВА КОЛОНКА --- */}
       <div className={styles.resultsColumn}>
-
-
 
         {loading && (
           <div style={{ textAlign: 'center', padding: 40, color: 'white', fontSize: '1.2rem' }}>

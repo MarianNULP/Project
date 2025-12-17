@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './EventForm.module.css'; // Імпорт стилів
+import { API_URL } from '@/utils/api';
 
 
 export function EventForm({ eventName, eventId, price }) {

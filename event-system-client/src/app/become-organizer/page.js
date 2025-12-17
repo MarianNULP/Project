@@ -2,7 +2,6 @@
 import { API_URL } from '@/utils/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// Імпортуємо стилі
 import styles from './page.module.css'; 
 
 export default function BecomeOrganizerPage() {
@@ -32,7 +31,7 @@ export default function BecomeOrganizerPage() {
     const jwt = localStorage.getItem('jwt');
 
     try {
-      const res = await fetch('http://127.0.0.1:1337/api/organizer-requests', {
+      const res = await fetch(`${API_URL}/api/organizer-requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
